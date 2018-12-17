@@ -44,7 +44,7 @@ class GenericPageComponentBeforeWrap extends Component {
                             );
                         }
                     })()
-                    : <div>SSR doesn't work or in dev-mode!</div>
+                    : <div>SSR doesnt work or in dev-mode!</div>
                 }
             </div>
         );

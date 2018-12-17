@@ -14,35 +14,30 @@ export const changePage = dispatch => (url, first, serverContext) => {
             })
         }
 
-        // if we are on the server, attach a promise to context, 
+        const request = axios.get(`https://umbraco-connector.herokuapp.com/api/page/url?url=${url}`)
+            .then(pageinfo => {
+                dispatch({
+                    type: 'PAGE_RESPONDED',
+                    payload: pageinfo.data
+                });
+                return 200;
+            }).catch(e => {   
+                dispatch({
+                    type: 'PAGE_RESPONDED',
+                    payload: { Template: '404page', Name: '404' }
+                });
+                // todo: send the right error - not always 404
+                return 404;
+            });
+
+        // if we are on the server, attach the request-promise to context, 
         // so SSR waits for ext. server-response before renderToString
-        let resolve;
-        if(serverContext) {
-            serverContext.pageInfo = new Promise(res => {
-                resolve = res;
+        if (serverContext) {
+            serverContext.pageInfo = request.then(status => {
+                if(status === 404) {
+                    serverContext.is404 = true; 
+                }
             });
         }
-
-        axios.get(`https://umbraco-connector.herokuapp.com/api/page/url?url=${url}`).then(pageinfo => {
-            dispatch({
-                type: 'PAGE_RESPONDED',
-                payload: pageinfo.data
-            });
-
-            //let the server know the data is ready
-            if(typeof resolve === 'function') {
-                resolve();
-            }
-        }).catch(e => {
-            console.warn(e);
-            if(serverContext) {
-                serverContext.is404 = true;   
-            }                 
-            dispatch({
-                type: 'PAGE_RESPONDED',
-                payload: { Template: '404page', Name: '404' }
-            })
-        });
-
     });
 }
