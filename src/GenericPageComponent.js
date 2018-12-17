@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Helmet } from 'react-helmet';
 
-import axios from 'axios';
+import { changePage } from './pages/change-page.action';
 
 import RootPage from './pages/PageDefault';
 import BasePage from './pages/PageAnother';
@@ -14,7 +14,6 @@ const Pages = {
     '404page': Page404
 };
 
-//TODO: put some helmet stuff inhere
 class GenericPageComponentBeforeWrap extends Component {
 
     componentDidUpdate(prevProps) {
@@ -24,13 +23,7 @@ class GenericPageComponentBeforeWrap extends Component {
     }
 
     componentWillMount() {
-        if(this.props.staticContext) {
-            // on the server
-            return this.props.staticContext.pageInfo = new Promise(resolve => {
-                this.props.changePage(this.props.location.pathname, true, resolve, this.props.staticContext);
-            });
-        }        
-        this.props.changePage(this.props.location.pathname, true);
+        this.props.changePage(this.props.location.pathname, true, this.props.staticContext);
     }
 
     render() {
@@ -51,7 +44,7 @@ class GenericPageComponentBeforeWrap extends Component {
                             );
                         }
                     })()
-                    : <div>loading... <br/>(should never happen in prod in browser because SSR!)</div>
+                    : <div>SSR doesn't work or in dev-mode!</div>
                 }
             </div>
         );
@@ -67,46 +60,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        changePage: (url, first, resolve, context) => {
-
-            dispatch({
-                type: 'PAGE_REQUESTED'
-            });
-
-            return dispatch((doDispatch, getState) => {
-                if(first && resolve === undefined && getState().routing.page) {
-                    // its the first view, in the browser and we already have the page in state
-                    return dispatch({
-                        type: 'PAGE_RESPONDED',
-                        payload: getState().routing.page
-                    })
-                }
-
-                axios.get(`https://umbraco-connector.herokuapp.com/api/page/url?url=${url}`).then(pageinfo => {
-                    dispatch({
-                        type: 'PAGE_RESPONDED',
-                        payload: pageinfo.data
-                    });
-
-                    //let the server know the data is ready
-                    if(typeof resolve === 'function') {
-                        resolve();
-                    }
-                }).catch(e => {
-                    console.warn(e);
-                    if(context) {
-                        context.is404 = true;   
-                    }                 
-                    dispatch({
-                        type: 'PAGE_RESPONDED',
-                        payload: { Template: '404page', Name: '404' }
-                    })
-                });
-
-            });
-        }
+        changePage: changePage(dispatch)
     }
 }
-
 
 export const GenericPageComponent = connect(mapStateToProps, mapDispatchToProps)(GenericPageComponentBeforeWrap);
