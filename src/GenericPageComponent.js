@@ -1,46 +1,36 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Helmet } from 'react-helmet';
-
 import { changePage } from './pages/change-page.action';
 
-import RootPage from './pages/PageDefault';
-import BasePage from './pages/PageAnother';
+import SearchShow from './pages/SearchShow';
 import Page404 from './pages/Page404';
 
 const Pages = {
-    'rootPage': RootPage,
-    'basePage': BasePage,
+    'Search-Show': SearchShow,
     '404page': Page404
 };
 
 class GenericPageComponentBeforeWrap extends Component {
 
     componentDidUpdate(prevProps) {
-        if (prevProps.location.pathname !== this.props.location.pathname) {
-            this.props.changePage(this.props.location.pathname);
+        if (!((prevProps.location.pathname === this.props.location.pathname) && (prevProps.location.search === this.props.location.search))) {
+            this.props.changePage(this.props.location);
         }
     }
 
     componentWillMount() {
-        this.props.changePage(this.props.location.pathname, true, this.props.staticContext);
+        this.props.changePage(this.props.location, true, this.props.staticContext);
     }
 
     render() {
         return (
             <div className={this.props && this.props.loading ? 'loading' : ''}>
-                <h1>Home {this.props.location.pathname}</h1>
                 {(this.props && this.props.page) ?
                     (() => {
-                        const Page = Pages[this.props.page.Template];
+                        const Page = Pages[this.props.page.action];
                         if (Page) {
                             return (
-                                <div>
-                                    <Helmet>
-                                        <title>{this.props.page.Name}</title>
-                                    </Helmet>
-                                    <Page page={this.props.page}></Page>
-                                </div>
+                                <Page page={this.props.page}></Page>
                             );
                         }
                     })()

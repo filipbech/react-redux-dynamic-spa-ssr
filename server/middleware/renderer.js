@@ -34,7 +34,7 @@ export default (store) => (req, res, next) => {
 
         const bundle = (
             <ReduxProvider store={store}>
-                <StaticRouter location={req.baseUrl} context={routerContext}>
+                <StaticRouter location={req.originalUrl} context={routerContext}>
                     <App />
                 </StaticRouter>
             </ReduxProvider>

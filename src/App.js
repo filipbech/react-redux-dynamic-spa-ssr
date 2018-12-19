@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 import { Route, NavLink } from 'react-router-dom';
+import { FooterComponent } from './components/footer';
+import { HeaderComponent } from './components/header';
+
 
 import { GenericPageComponent } from './GenericPageComponent'
 
@@ -12,28 +15,11 @@ class App extends Component {
     render() {
         return (
             <div className="App">
-                <header>HEADER...</header>
-               
-                <nav>
-                    <ul>
-                        <li>
-                            <NavLink to="/en/">Home</NavLink>
-                        </li>
-                        <li>
-                            <NavLink to="/da/om-fisk/">Om fisk</NavLink>
-                        </li>
-                        <li>
-                            <NavLink to="/da/om-fisk/laksen">Laksen</NavLink>
-                        </li>
-                        <li>
-                            <NavLink to="/da/kontakt/">Kontakt</NavLink>
-                        </li>
-                    </ul>
-                </nav>
+                <HeaderComponent></HeaderComponent>
 
                 <Route path="*" component={GenericPageComponent} />             
-          
-                <footer>FOOTER!</footer>
+
+                <FooterComponent></FooterComponent>
             </div>
         );
     }

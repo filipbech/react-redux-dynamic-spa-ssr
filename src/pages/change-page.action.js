@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const changePage = dispatch => (url, first, serverContext) => {
+export const changePage = dispatch => (location, first, serverContext) => {
     dispatch({
         type: 'PAGE_REQUESTED'
     });
@@ -13,8 +13,8 @@ export const changePage = dispatch => (url, first, serverContext) => {
                 payload: getState().routing.page
             })
         }
-
-        const request = axios.get(`https://umbraco-connector.herokuapp.com/api/page/url?url=${url}`)
+        const url = `https://dev05-store-ganni.demandware.net${location.pathname + location.search}${location.search ? '&' : '?'}format=ajax`;
+        const request = axios.get(url)
             .then(pageinfo => {
                 dispatch({
                     type: 'PAGE_RESPONDED',
@@ -26,6 +26,7 @@ export const changePage = dispatch => (url, first, serverContext) => {
                     type: 'PAGE_RESPONDED',
                     payload: { Template: '404page', Name: '404' }
                 });
+                console.warn('error',url,  e);
                 // todo: send the right error - not always 404
                 return 404;
             });
