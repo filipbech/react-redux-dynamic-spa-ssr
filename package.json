@@ -29,7 +29,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "server": "NODE_ENV=production node server/bootstrap.js"
+    "server": "NODE_ENV=production node server/bootstrap.js",
+    "postinstall": "npm run build"
   },
   "browserslist": [
     ">0.2%",
