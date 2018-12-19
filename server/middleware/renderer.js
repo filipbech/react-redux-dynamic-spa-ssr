@@ -55,7 +55,7 @@ export default (store) => (req, res, next) => {
 
             // map required assets to script tags
             const extraChunks = extractAssets(manifest, modules)
-                .map(c => `<script type="text/javascript" src="https://enigmatic-harbor-60442.herokuapp.com/${c}"></script>`);
+                .map(c => `<script type="text/javascript" src="${c}"></script>`);
 
             // get HTML headers
             const helmet = Helmet.renderStatic();
